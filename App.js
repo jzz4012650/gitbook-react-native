@@ -1,24 +1,56 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import axios from 'axios';
+import { TabNavigator, StackNavigator } from 'react-navigation';
+import { View, TabBarIOS, Text, StyleSheet, Button } from 'react-native';
 
-export default class App extends React.Component {
+import Books from './components/Books';
+import { GITBOOK_HOST, URL_BOOK_ALL } from './constants';
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentTab: 'Books',
+    }
+  }
+
+
+  handleTabChange = (tab) => {
+    this.setState({ currentTab: tab });
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
-        <Text>Hello world!</Text>
+      <View>
+        <Text>Hello</Text>
       </View>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+})
+
+const Home = StackNavigator({
+  Home: { screen: App, navigationOptions: { title: 'Git book' } }
+})
+
+export default TabNavigator({
+  Home: {
+    screen: Home,
+    navigationOptions: {
+      title: 'Home'
+    }
+  },
+  Books: {
+    screen: Books,
+    navigationOptions: {
+      title: 'Books'
+    }
+  },
+}, {
+  lazy: true,
 });

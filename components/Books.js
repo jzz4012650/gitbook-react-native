@@ -1,0 +1,107 @@
+import React from 'react';
+import axios from 'axios';
+import { StackNavigator } from 'react-navigation';
+import { StyleSheet, Text, View, FlatList, Image, Alert, ActivityIndicator } from 'react-native';
+
+import { GITBOOK_HOST, URL_BOOK_ALL } from '../constants';
+
+class Books extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      books: [],
+      page: 1,
+    }
+  }
+
+  componentDidMount() {
+    this.getBooks(this.state.page).then(data => {
+      this.setState({
+        books: data.list,
+      });
+    })
+  }
+
+  getBooks = (page) => {
+    this.setState({ loading: true });
+    return axios.get(URL_BOOK_ALL, { page: page || 1 })
+      .then(res => {
+        this.setState({ loading: false })
+        return Promise.resolve(res.data);
+      })
+      .catch(err => {
+        this.setState({ loading: false })
+        Alert.alert('Network error!', err.msg, [{ text: 'OK' }])
+      })
+  }
+
+  renderBook = (obj) => {
+    const item = obj.item;
+    return (
+      <View style={styles.book}>
+        <Image style={styles.bookThumb} source={{ uri: GITBOOK_HOST + item.cover.small }} />
+        <View style={styles.bookInfo}>
+          <Text style={styles.bookTitle}>{item.title}</Text>
+        </View>
+      </View>
+    )
+  }
+
+  handleLoadMore = () => {
+    const newPage = this.state.page + 1;
+    if (this.state.loading) {
+      return;
+    }
+    this.getBooks(newPage).then(data => {
+      this.setState({
+        books: this.state.books.concat(data.list),
+        page: newPage,
+      })
+    })
+  }
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <FlatList
+          refreshing={this.state.loading}
+          style={styles.list}
+          data={this.state.books}
+          renderItem={this.renderBook}
+          keyExtractor={(d, i) => i}
+          ListFooterComponent={this.state.loading ? <ActivityIndicator /> : null}
+          onEndReached={this.handleLoadMore}
+        />
+      </View>
+    )
+  }
+}
+
+const listItemHeight = 100;
+const listItemPadding = 5;
+const styles = StyleSheet.create({
+  loading: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  list: {
+    flex: 1,
+  },
+  separator: {
+    borderStyle: 'solid',
+    borderBottomWidth: 1,
+    borderBottomColor: '#CCC',
+  },
+});
+
+const BooksNav = StackNavigator({
+  Books: { screen: Books, navigationOptions: { title: 'Books' } }
+})
+
+export default BooksNav;
