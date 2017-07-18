@@ -4,53 +4,21 @@ import { TabNavigator, StackNavigator } from 'react-navigation';
 import { View, TabBarIOS, Text, StyleSheet, Button } from 'react-native';
 
 import Books from './components/Books';
+import Home from './components/Home';
+import BookDetail from './components/BookDetail';
+import ReadBook from './components/ReadBook';
 import { GITBOOK_HOST, URL_BOOK_ALL } from './constants';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentTab: 'Books',
-    }
-  }
-
-
-  handleTabChange = (tab) => {
-    this.setState({ currentTab: tab });
-  }
-
-  render() {
-    return (
-      <View>
-        <Text>Hello</Text>
-      </View>
-    )
-  }
-}
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
-})
-
-const Home = StackNavigator({
-  Home: { screen: App, navigationOptions: { title: 'Git book' } }
-})
-
-export default TabNavigator({
+export default StackNavigator({
   Home: {
-    screen: Home,
+    screen: TabNavigator({
+      Home: { screen: Home },
+      Books: { screen: Books },
+    }, { lazy: true }),
     navigationOptions: {
-      title: 'Home'
+      title: 'Gitbook'
     }
   },
-  Books: {
-    screen: Books,
-    navigationOptions: {
-      title: 'Books'
-    }
-  },
-}, {
-  lazy: true,
+  BookDetail: { screen: BookDetail, navigationOptions: { title: 'Detail' } },
+  ReadBook: {screen: ReadBook }
 });

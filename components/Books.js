@@ -3,6 +3,8 @@ import axios from 'axios';
 import { StackNavigator } from 'react-navigation';
 import { StyleSheet, Text, View, FlatList, Image, Alert, ActivityIndicator } from 'react-native';
 
+import Book from './Book';
+import Separator from './Separator';
 import { GITBOOK_HOST, URL_BOOK_ALL } from '../constants';
 
 class Books extends React.Component {
@@ -39,14 +41,12 @@ class Books extends React.Component {
 
   renderBook = (obj) => {
     const item = obj.item;
-    return (
-      <View style={styles.book}>
-        <Image style={styles.bookThumb} source={{ uri: GITBOOK_HOST + item.cover.small }} />
-        <View style={styles.bookInfo}>
-          <Text style={styles.bookTitle}>{item.title}</Text>
-        </View>
-      </View>
-    )
+    const {navigate} = this.props.navigation;
+    return <Book item={item} navigate={navigate} />
+  }
+
+  renderSeparator = () => {
+    return <Separator />
   }
 
   handleLoadMore = () => {
@@ -71,7 +71,8 @@ class Books extends React.Component {
           data={this.state.books}
           renderItem={this.renderBook}
           keyExtractor={(d, i) => i}
-          ListFooterComponent={this.state.loading ? <ActivityIndicator /> : null}
+          ListFooterComponent={this.state.loading ? <ActivityIndicator style={styles.loading}/> : null}
+          ItemSeparatorComponent={this.renderSeparator}
           onEndReached={this.handleLoadMore}
         />
       </View>
@@ -93,15 +94,11 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
-  separator: {
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderBottomColor: '#CCC',
+  loading: {
+    marginTop: 10,
+    marginBottom: 10,
   },
 });
 
-const BooksNav = StackNavigator({
-  Books: { screen: Books, navigationOptions: { title: 'Books' } }
-})
 
-export default BooksNav;
+export default Books;

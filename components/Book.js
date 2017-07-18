@@ -1,34 +1,49 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 
-const Book = ({ }) => {
-  return (
-    <View style={styles.book}>
-      <Image style={styles.bookThumb} source={{ uri: GITBOOK_HOST + item.cover.small }} />
-      <View style={styles.bookInfo}>
-        <Text style={styles.bookTitle}>{item.title}</Text>
-      </View>
-    </View>
-  );
-}
+import { GITBOOK_HOST, BOOK_THUMB_RATIO_SMALL } from '../constants';
 
+const listItemHeight = 100;
+const listItemPadding = 5;
 const styles = StyleSheet.create({
   book: {
-    height: listItemHeight,
     padding: listItemPadding,
     flexDirection: 'row',
   },
   bookThumb: {
-    width: listItemHeight - 2 * listItemPadding,
+    width: (listItemHeight - 2 * listItemPadding) * BOOK_THUMB_RATIO_SMALL,
     height: listItemHeight - 2 * listItemPadding,
+    borderColor: '#CCC',
+    borderWidth: 1,
   },
   bookInfo: {
     flex: 1,
-    paddingLeft: listItemPadding,
+    paddingLeft: listItemPadding * 2,
   },
   bookTitle: {
     fontWeight: '700',
     fontSize: 16,
+    color: '#666',
+  },
+  bookAuthor: {
+    fontSize: 12,
+    color: '#AAA',
   },
 })
+
+const Book = ({ item, navigate }) => {
+  return (
+    <TouchableOpacity activeOpacity={0.5} onPress={() => navigate('BookDetail', item)}>
+      <View style={styles.book}>
+        <Image style={styles.bookThumb} source={{ uri: GITBOOK_HOST + item.cover.small }} />
+        <View style={styles.bookInfo}>
+          <Text style={styles.bookTitle}>{item.title}</Text>
+          <Text style={styles.bookAuthor}>{item.author.name}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+
 export default Book;
